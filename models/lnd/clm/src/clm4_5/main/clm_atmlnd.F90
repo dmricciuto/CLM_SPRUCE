@@ -57,6 +57,7 @@ module clm_atmlnd
      real(r8), pointer :: forc_solar(:)    => null() !incident solar radiation
      real(r8), pointer :: forc_rain(:)     => null() !rain rate [mm/s]
      real(r8), pointer :: forc_snow(:)     => null() !snow rate [mm/s]
+     real(r8), pointer :: forc_zwt(:)      => null() !water table height (m)
      real(r8), pointer :: forc_ndep(:)     => null() !nitrogen deposition rate (gN/m2/s)
      real(r8), pointer :: rainf(:)         => null() !ALMA rain+snow [mm/s]
      real(r8), pointer :: forc_pc13o2(:)   => null() !C13O2 partial pressure (Pa)
@@ -164,7 +165,7 @@ contains
   integer :: ival_int
 !------------------------------------------------------------------------
   !DMR - variables added for CPL_BYPASS option 
-  allocate(a2l%atm_input(8,1,1,200000))
+  allocate(a2l%atm_input(9,1,1,200000))
   allocate(a2l%timelen)
   allocate(a2l%start_tindex)
   allocate(a2l%co2_input(1,1,247))
@@ -194,6 +195,7 @@ contains
   allocate(a2l%forc_solar(beg:end))
   allocate(a2l%forc_rain(beg:end))
   allocate(a2l%forc_snow(beg:end))
+  allocate(a2l%forc_zwt(beg:end))
   allocate(a2l%forc_ndep(beg:end))
   allocate(a2l%rainf(beg:end))
   if ( use_c13 ) then
@@ -247,6 +249,7 @@ contains
   a2l%forc_solar(beg:end) = ival
   a2l%forc_rain(beg:end) = ival
   a2l%forc_snow(beg:end) = ival
+  a2l%forc_zwt(beg:end) = ival
   a2l%forc_ndep(beg:end) = ival
   a2l%rainf(beg:end) = nan
   if ( use_c13 ) then

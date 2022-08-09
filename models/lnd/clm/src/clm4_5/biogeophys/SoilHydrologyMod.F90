@@ -426,6 +426,7 @@ contains
     use clm_varctl      , only: iulog
     use clm_time_manager, only : get_step_size
     use clm_varpar      , only : nlevsoi
+    use clm_atmlnd      , only : clm_a2l
     use H2OSfcMod       , only : FracH2oSfc
     use shr_const_mod   , only : shr_const_pi
     use pftvarcon       , only : qflx_h2osfc_surfrate
@@ -608,6 +609,7 @@ contains
     qflx_surf_input => cwf%qflx_surf_input
     zi             => cps%zi
     qflx_lat_aqu   => cwf%qflx_lat_aqu
+    forc_zwt       => clm_a2l%forc_zwt
 #if (defined HUM_HOL)
 	qflx_lat_aqu_layer 		=> cwf%qflx_lat_aqu_layer
 	h2osoi_vol     			=> cws%h2osoi_vol
@@ -841,10 +843,15 @@ contains
               !turn off lateral transport if any ice is present
               qflx_lat_aqu(:) = 0._r8
             else
-              qflx_lat_aqu(1) =  2._r8/(1._r8/ka_hu+1._r8/ka_ho) *  (zwt_hu-zwt_ho-humhol_ht) / 1._r8 * &
-                 sqrt(hol_frac/hum_frac)
-              qflx_lat_aqu(2) = -2._r8/(1._r8/ka_hu+1._r8/ka_ho) *  (zwt_hu-zwt_ho-humhol_ht) / 1._r8 * &
-                 sqrt(hum_frac/hol_frac)
+               !Predict the water table height
+            !  qflx_lat_aqu(1) =  2._r8/(1._r8/ka_hu+1._r8/ka_ho) *  (zwt_hu-zwt_ho-humhol_ht) / 1._r8 * &
+            !     sqrt(hol_frac/hum_frac)
+            !  qflx_lat_aqu(2) = -2._r8/(1._r8/ka_hu+1._r8/ka_ho) *  (zwt_hu-zwt_ho-humhol_ht) / 1._r8 * &
+            !     sqrt(hum_frac/hol_frac)
+
+               !Drive the water table with observations
+               qflx_lat_aqu(1) = ka_hu * (zwt_hu-(forc_zwt(g)+humhol_ht)) / 1.0_r8
+               qflx_lat_aqu(2) = ka_ho * (zwt_ho-forc_zwt(g)) / 1.0_r8
             endif
           endif
 #endif

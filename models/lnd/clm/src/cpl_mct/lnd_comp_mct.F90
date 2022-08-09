@@ -1084,6 +1084,8 @@ contains
           ierr = nf90_get_var(ncid, varid, a2l%atm_input(7,1:1,1:1,1:a2l%timelen), starti, counti)
           ierr = nf90_inq_varid(ncid, 'ZBOT', varid)
           ierr = nf90_get_var(ncid, varid, a2l%atm_input(8,1:1,1:1,1:a2l%timelen), starti, counti)
+          ierr = nf90_inq_varid(ncid, 'ZWT', varid)
+          ierr = nf90_get_var(ncid, varid, a2l%atm_input(9,1:1,1:1,1:a2l%timelen), starti, counti)
           starti(1) = 1
           counti(1) = 2
           ierr = nf90_inq_varid(ncid, 'DTIME', varid)
@@ -1174,6 +1176,9 @@ contains
         if (yr .ge. startyear_experiment .and. yr .le. endyear_experiment .and. add_temperature .ge. 0) then
             a2l%forc_lwrad(g) = 0.33_r8*a2l%forc_lwrad(g) + 0.67_r8*(0.95_r8*5.670373e-8_r8*tbot**4) 
         end if
+
+        !Water table
+        a2l%forc_zwt(g) = (a2l%atm_input(9,1,1,tindex(1))*wt1 + a2l%atm_input(9,1,1,tindex(2))*wt2)
 
         swndr               =(a2l%atm_input(5,1,1,tindex(1))*wt1 + a2l%atm_input(5,1,1,tindex(2))*wt2) * 0.50_R8
         ratio_rvrf =   min(0.99_R8,max(0.29548_R8 + 0.00504_R8*swndr  &
